@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 require('dotenv').config()
 const app = express();
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const port = process.env.PORT || 5000;
 
 //middleware
@@ -24,12 +24,149 @@ async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
+
+    const craftCollection = client.db('craftDB').collection('craft');
+    const listItemsCollection = client.db('craftDB').collection('listItems');
+    const usersCollection = client.db('craftDB').collection('users');
+    
+
+      // CREATE read
+    app.get("/craft" , async(req , res) => {
+        const cursor = craftCollection.find();
+        const result = await cursor.toArray();
+        res.send(result);
+    })
+        //update er jonno 
+    app.get("/craft/:id" , async(req , res) =>{
+        const id = req.params.id;
+        const query = {_id: new ObjectId(id)}
+        const result = await craftCollection.findOne(query);
+        res.send(result);        
+    })
+       //CREATE DONE
+    app.post("/craft" , async(req , res) =>{
+        const newCraft = req.body;
+        console.log(newCraft);
+        const result = await craftCollection.insertOne(newCraft);
+        res.send(result);
+    })
+       // update  
+       app.put('/craft/:id', async(req , res) =>{
+        const id = req.params.id;
+        const filter = {_id: new ObjectId(id)}
+        const options = {upsert : true};
+        const updatedCraft = req.body;
+        const craftItems ={
+            $set: {
+                item_name: updatedCraft.item_name,
+                subcategory_Name: updatedCraft.subcategory_Name,
+                description: updatedCraft.description,
+                processing_time: updatedCraft.processing_time,
+                price: updatedCraft.price,
+                customization: updatedCraft.customization,
+                stockStatus: updatedCraft.stockStatus,
+                image: updatedCraft.image,
+            }
+        }
+        const result = await craftCollection.updateOne(filter, craftItems, options)
+        res.send(result);
+    })
+
+    app.delete('/craft/:id', async(req, res)=>{
+        const id =req.params.id;
+        const query = { _id: new ObjectId(id) };
+        const result = await craftCollection.deleteOne(query);
+        res.send(result);
+    })
+
+    //list items api s
+
+       // list item read
+    app.get("/listItems" , async(req , res) => {
+        const cursor = listItemsCollection.find();
+        const result = await cursor.toArray();
+        res.send(result);
+    })
+
+    //     //update er jonno 
+    app.get("/listItems/:id" , async(req , res) =>{
+        const id = req.params.id;
+        const query = {_id: new ObjectId(id)}
+        const result = await listItemsCollection.findOne(query);
+        res.send(result);        
+    })
+    
+        //create list items
+    app.post("/listItems" , async(req , res) =>{
+        const listItems = req.body;
+        console.log(listItems);
+        const result = await listItemsCollection.insertOne(listItems);
+        res.send(result);
+    })
+
+    //    // update  
+    // app.put('/listItems/:id', async(req , res) =>{
+    //     const id = req.params.id;
+    //     const filter = {_id: new ObjectId(id)}
+    //     const options = {upsert : true};
+    //     const updatedCraft = req.body;
+    //     const craftItems ={
+    //         $set: {
+    //             item_name: updatedCraft.item_name,
+    //             subcategory_Name: updatedCraft.subcategory_Name,
+    //             description: updatedCraft.description,
+    //             processing_time: updatedCraft.processing_time,
+    //             price: updatedCraft.price,
+    //             customization: updatedCraft.customization,
+    //             stockStatus: updatedCraft.stockStatus,
+    //             image: updatedCraft.image,
+    //         }
+    //     }
+    //     const result = await craftCollection.updateOne(filter, craftItems, options)
+    //     res.send(result);
+    // }) 
+       
+     //delete
+    app.delete('/listItems/:id', async(req, res)=>{
+        const id =req.params.id;
+        const query = { _id: new ObjectId(id) };
+        const result = await listItemsCollection.deleteOne(query);
+        res.send(result);
+    })
+    
+    //users related api s
+
+    // read
+    app.get("/users" , async(req , res) => {
+        const cursor = usersCollection.find();
+        const result = await cursor.toArray();
+        res.send(result);
+    })
+
+    //created
+    app.post("/users" , async(req , res) =>{
+        const users = req.body;
+        console.log(users);
+        const result = await usersCollection.insertOne(users);
+        res.send(result);
+    })
+
+    //delete
+    app.delete('/users/:id', async(req, res)=>{
+        const id =req.params.id;
+        const query = { _id: new ObjectId(id) };
+        const result = await usersCollection.deleteOne(query);
+        res.send(result);
+    })
+
+
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
-    await client.close();
+   // await client.close();
   }
 }
 run().catch(console.dir);
