@@ -28,6 +28,9 @@ async function run() {
     const craftCollection = client.db('craftDB').collection('craft');
     const listItemsCollection = client.db('craftDB').collection('listItems');
     const usersCollection = client.db('craftDB').collection('users');
+    const kitchenCollection = client.db('craftDB').collection('kitchen');   
+    const jutehomeCollection = client.db('craftDB').collection('jutehome'); 
+    const artiesthomeCollection = client.db('craftDB').collection('artiest');
     
 
       // CREATE read
@@ -36,7 +39,7 @@ async function run() {
         const result = await cursor.toArray();
         res.send(result);
     })
-        //update er jonno 
+        //update 
     app.get("/craft/:id" , async(req , res) =>{
         const id = req.params.id;
         const query = {_id: new ObjectId(id)}
@@ -78,8 +81,6 @@ async function run() {
         const result = await craftCollection.deleteOne(query);
         res.send(result);
     })
-
-    //list items api s
 
        // list item read
     app.get("/listItems" , async(req , res) => {
@@ -158,6 +159,74 @@ async function run() {
         const result = await usersCollection.deleteOne(query);
         res.send(result);
     })
+
+    app.get("/kitchen", async (req, res) => {     
+        const result = await  kitchenCollection.find().toArray();
+        res.send(result);
+    });
+
+    app.post("/kitchen", async (req, res) => {
+        const kitchenItem = req.body;
+        console.log(kitchenItem);
+        const result = await kitchenCollection.insertOne(kitchenItem);
+        res.send(result);
+    });
+
+    app.get("/kitchen/:id" , async(req , res) =>{
+        const id = req.params.id;
+        console.log(id);
+        
+        const query = {_id: new ObjectId(id)}
+        const result = await kitchenCollection.findOne(query);
+        res.send(result);        
+    })
+
+    app.delete('/kitchen/:id', async(req, res)=>{
+        const id =req.params.id;
+        const query = { _id: new ObjectId(id) };
+        const result = await kitchenCollection.deleteOne(query);
+        res.send(result);
+    })
+
+    app.get("/jutehome", async (req, res) => {     
+        const result = await jutehomeCollection.find().toArray();
+        res.send(result);
+    });
+
+    app.post("/jutehome", async (req, res) => {
+        const jutehome = req.body;
+        console.log(jutehome);
+        const result = await jutehomeCollection.insertOne(jutehome);
+        res.send(result);
+    });
+
+    app.get("/jutehome/:id" , async(req , res) =>{
+        const id = req.params.id;
+        console.log(id);        
+        const query = {_id: new ObjectId(id)}
+        const result = await jutehomeCollection.findOne(query);
+        res.send(result);        
+    })
+
+    app.delete('/jutehome/:id', async(req, res)=>{
+        const id =req.params.id;
+        const query = { _id: new ObjectId(id) };
+        const result = await jutehomeCollection.deleteOne(query);
+        res.send(result);
+    })
+
+    app.get("/artiest", async (req, res) => {     
+        const result = await artiesthomeCollection.find().toArray();
+        res.send(result);
+    });
+
+    app.post("/artiest", async (req, res) => {
+        const artiest = req.body;
+        console.log(artiest);
+        const result = await artiesthomeCollection.insertOne(artiest);
+        res.send(result);
+    });
+    
 
 
 
