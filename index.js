@@ -23,7 +23,7 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+   // await client.connect();
 
     const craftCollection = client.db('craftDB').collection('craft');
     const listItemsCollection = client.db('craftDB').collection('listItems');
@@ -105,27 +105,6 @@ async function run() {
         res.send(result);
     })
 
-    //    // update  
-    // app.put('/listItems/:id', async(req , res) =>{
-    //     const id = req.params.id;
-    //     const filter = {_id: new ObjectId(id)}
-    //     const options = {upsert : true};
-    //     const updatedCraft = req.body;
-    //     const craftItems ={
-    //         $set: {
-    //             item_name: updatedCraft.item_name,
-    //             subcategory_Name: updatedCraft.subcategory_Name,
-    //             description: updatedCraft.description,
-    //             processing_time: updatedCraft.processing_time,
-    //             price: updatedCraft.price,
-    //             customization: updatedCraft.customization,
-    //             stockStatus: updatedCraft.stockStatus,
-    //             image: updatedCraft.image,
-    //         }
-    //     }
-    //     const result = await craftCollection.updateOne(filter, craftItems, options)
-    //     res.send(result);
-    // }) 
        
      //delete
     app.delete('/listItems/:id', async(req, res)=>{
